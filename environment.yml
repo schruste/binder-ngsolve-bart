@@ -1,0 +1,19 @@
+name: ngs-environment
+channels:
+    - conda-forge
+    - ngsolve
+    - pyviz
+dependencies:
+    - python=3.7
+    - ngsolve-nogui
+    - bokeh
+    - pyviz_comms
+    - panel
+    - lxml
+    - numpy
+    - scipy
+    - matplotlib
+    - pyct
+    - pyvista
+    - pip:
+        - git+https://github.com/regpy/regpy.git@dev
