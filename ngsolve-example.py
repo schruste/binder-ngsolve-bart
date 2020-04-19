@@ -1,7 +1,7 @@
 import logging
 
+from netgen.geom2d import SplineGeometry
 import ngsolve as ngs
-import ngsolve.meshes
 import numpy as np
 import pyvista as pv
 
@@ -13,10 +13,10 @@ from regpy.solvers.irgnm import IrgnmCG
 import regpy.stoprules as rules
 
 
-# logging.basicConfig(
-#     level=logging.INFO,
-#     format='%(asctime)s %(levelname)s %(name)-40s :: %(message)s'
-# )
+logging.basicConfig(
+    level=logging.INFO,
+    format='%(asctime)s %(levelname)s %(name)-40s :: %(message)s'
+)
 
 def plotmeshes(dom, **kwargs):
     names = list(kwargs.keys())
@@ -33,14 +33,16 @@ def plotmeshes(dom, **kwargs):
         panels[n] = p.show(use_panel=True)
     return panels
 
-noiselevel = 0.0001
+noiselevel = 0.01
 
-domain = NgsSpace(ngs.L2(ngs.meshes.MakeQuadMesh(nx=10, ny=10), order=2))
-codomain = NgsSpace(ngs.H1(ngs.meshes.MakeQuadMesh(nx=10, ny=10), order=3, dirichlet="left|top|right|bottom"))
-noise_domain = NgsSpace(ngs.L2(codomain.fes.mesh, order=1))
-noise = codomain.from_ngs(noise_domain.to_ngs(noiselevel * np.random.randn(noise_domain.fes.ndof)))
+geo = SplineGeometry()
+geo.AddRectangle((0.4, 0.45), (0.6, 0.55), leftdomain=0, rightdomain=1)
+geo.AddRectangle((0, 0), (1, 1), bcs=["bottom","right","top","left"], leftdomain=1)
 
-cfu_exact_solution = ngs.x + 1
+domain = NgsSpace(ngs.H1(ngs.Mesh(geo.GenerateMesh(maxh=0.4)), order=1))
+codomain = NgsSpace(ngs.H1(ngs.Mesh(geo.GenerateMesh(maxh=0.1)), order=1, dirichlet="left|top|right|bottom"))
+
+cfu_exact_solution = 1 + ngs.x
 exact_solution = domain.from_ngs(cfu_exact_solution)
 
 op = Coefficient(
@@ -50,22 +52,28 @@ op = Coefficient(
     diffusion=False, reaction=True
 )
 
-setting = HilbertSpaceSetting(op=op, Hdomain=L2, Hcodomain=Sobolev)
-
+noise = noiselevel * np.random.randn(codomain.fes.ndof)
 data = op(exact_solution) + noise
+plotmeshes(codomain, data=codomain.to_ngs(data))['data']
+
+# ---
+
+setting = HilbertSpaceSetting(op=op, Hdomain=L2, Hcodomain=L2)
 
 reco, reco_data = IrgnmCG(
     setting, data,
     init=domain.from_ngs(1 + ngs.x + 5*ngs.x*(1-ngs.x)*ngs.y*(1-ngs.y)),
-    regpar=1, regpar_step=2/3, cgstop=50,
+    regpar=0.1, regpar_step=2/3, cgstop=100,
 ).run(
-    rules.CountIterations(15) +
-    rules.Discrepancy(setting.Hcodomain.norm, data, noiselevel=setting.Hcodomain.norm(noise), tau=1.1)
+    rules.CountIterations(20) +
+    rules.Discrepancy(setting.Hcodomain.norm, data, noiselevel=setting.Hcodomain.norm(noise), tau=1.01)
 )
 
 gfu_reco = op.domain.to_ngs(reco)
 plots = plotmeshes(domain, reco=gfu_reco, error=cfu_exact_solution - gfu_reco)
 
 plots['reco']
+
+# ---
 
 plots['error']
