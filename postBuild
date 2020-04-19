@@ -1,5 +1,7 @@
 #!/bin/bash
 
+set -ex
+
 cd bart
 sed -i s/iter4/iter5/g src/iter/iter5.c
 make PARALLEL=1 CFLAGS+=-fPIC OMP=0
