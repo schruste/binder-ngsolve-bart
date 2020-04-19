@@ -5,9 +5,9 @@ export PYVISTA_USE_PANEL=true
 export PYVISTA_PLOT_THEME=document
 export PYVISTA_AUTO_CLOSE=false
 
-export LD_LIBRARY_PATH=$PWD
+export LD_LIBRARY_PATH=$PWD:$LD_LIBRARY_PATH
 export TOOLBOX_PATH=$PWD/bart
-export PYTHONPATH=$PWD/bart/python
+export PYTHONPATH=$PWD/bart/python:$PYTHONPATH
 
 export DISPLAY=:99.0
 Xvfb :99 -screen 0 1024x768x24 > /dev/null 2>&1 &
