@@ -5,7 +5,6 @@ export PYVISTA_USE_PANEL=true
 export PYVISTA_PLOT_THEME=document
 export PYVISTA_AUTO_CLOSE=false
 
-export LD_LIBRARY_PATH=$PWD/bart
 export TOOLBOX_PATH=$PWD/bart
 export PYTHONPATH=$PWD/bart/python
 

@@ -6,3 +6,5 @@ make PARALLEL=1 CFLAGS+=-fPIC OMP=0
 gcc -shared -fopenmp -o bart.so src/bart.o \
 	-llapacke -lblas -llapack -lblas -lquadmath -lz -lpng -lfftw3f -lfftw3f_threads -lm -luuid \
 	-Wl,-whole-archive lib/lib*.a -Wl,-no-whole-archive -Wl,-Bstatic -Wl,-Bdynamic
+mv bart.so /usr/local/lib
+ldconfig
