@@ -7,5 +7,3 @@ liblapacke-dev
 libpng-dev
 uuid-dev
 zlib1g-dev
-libgl1-mesa-dev
-xvfb
