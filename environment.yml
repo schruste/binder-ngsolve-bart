@@ -11,6 +11,5 @@ dependencies:
     - matplotlib
     - pyct
     - pip:
-        - git+https://github.com/regpy/regpy.git@dev
-	- webgui_jupyter_widgets
-	
+      - git+https://github.com/regpy/regpy.git@dev
+      - webgui_jupyter_widgets
