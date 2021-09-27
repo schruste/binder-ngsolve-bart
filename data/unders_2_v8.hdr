@@ -1,8 +1,0 @@
-# Dimensions
-1 192 192 8 1 1 1 1 1 1 1 1 1 1 1 1 
-# Command
-cc -p 8 -S unders_2 unders_2_v8 
-# Files
- >unders_2_v8 <unders_2
-# Creator
-BART v0.5.00-70-gaafd9eed
